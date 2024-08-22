@@ -1,0 +1,52 @@
+{
+    "os": "Windows-10-10.0.22631-SP0",
+    "python": "3.10.6",
+    "heartbeatAt": "2024-08-22T19:56:36.227634",
+    "startedAt": "2024-08-22T19:56:36.145999",
+    "docker": null,
+    "cuda": null,
+    "args": [
+        "discover",
+        "tests"
+    ],
+    "state": "running",
+    "program": "-m unittest.__main__",
+    "git": {
+        "remote": "https://github.com/Caua-ferraz/AILib.git",
+        "commit": "bec8ce6656e1b00e7c70e2a358258db7b9b35f72"
+    },
+    "email": "cauaferrazp@gmail.com",
+    "root": "D:/AiProject/AILib-library",
+    "host": "DESKTOP-RAJJ276",
+    "username": "Caua",
+    "executable": "C:\\Users\\maral\\AppData\\Local\\Programs\\Python\\Python310\\python.exe",
+    "cpu_count": 8,
+    "cpu_count_logical": 16,
+    "cpu_freq": {
+        "current": 3801.0,
+        "min": 0.0,
+        "max": 3801.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 3801.0,
+            "min": 0.0,
+            "max": 3801.0
+        }
+    ],
+    "disk": {
+        "total": 931.4609336853027,
+        "used": 718.7474822998047
+    },
+    "gpu": "NVIDIA GeForce RTX 3060",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA GeForce RTX 3060",
+            "memory_total": 12884901888
+        }
+    ],
+    "memory": {
+        "total": 23.88863754272461
+    }
+}

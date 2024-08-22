@@ -1,8 +1,11 @@
+LICENSE
 README.md
 setup.py
 ailib/__init__.py
+ailib/config.py
 ailib/core.py
 ailib/data_processing.py
+ailib/error_handling.py
 ailib/evaluation.py
 ailib/llm.py
 ailib/model_training.py
@@ -15,7 +18,11 @@ ailib.egg-info/requires.txt
 ailib.egg-info/top_level.txt
 tests/__init__.py
 tests/test_core.py
+tests/test_custom_models.py
 tests/test_data_processing.py
 tests/test_evaluation.py
+tests/test_integration.py
 tests/test_llm.py
+tests/test_llm_training.py
 tests/test_model_training.py
+tests/test_unified_model.py

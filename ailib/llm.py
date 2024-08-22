@@ -1,12 +1,11 @@
-# D:\AiProject\ailib\llm.py
+# D:\AiProject\AILib-library\ailib\llm.py
 
 import os
-import json
 from typing import List, Dict, Any, Optional
 import torch
-from transformers import AutoTokenizer, AutoModelForCausalLM, LineByLineTextDataset, DataCollatorForLanguageModeling
+from datasets import Dataset
+from transformers import AutoTokenizer, AutoModelForCausalLM, DataCollatorForLanguageModeling
 from transformers import Trainer, TrainingArguments, pipeline
-
 
 class LLM:
     def __init__(self, model_name: str = "gpt2"):
@@ -18,6 +17,9 @@ class LLM:
         if self.tokenizer.pad_token is None:
             self.tokenizer.pad_token = self.tokenizer.eos_token
             self.model.config.pad_token_id = self.tokenizer.eos_token_id
+        
+        # Resize token embeddings
+        self.model.resize_token_embeddings(len(self.tokenizer))
         
         self.generator = pipeline("text-generation", model=self.model, tokenizer=self.tokenizer)
 
@@ -37,30 +39,32 @@ class LLM:
     def get_token_ids(self, text: str) -> List[int]:
         return self.tokenizer.encode(text, add_special_tokens=False)
 
-    def fine_tune(self, file_path: str, train_labels: Optional[List[str]] = None, 
-                  num_epochs: int = 3, batch_size: int = 4, learning_rate: float = 2e-5):
-        if not os.path.exists(file_path):
-            raise FileNotFoundError(f"The training file {file_path} does not exist.")
+    def fine_tune(self, train_texts: List[str], train_labels: Optional[List[str]] = None, 
+                  num_epochs: int = 60, batch_size: int = 4, learning_rate: float = 2e-5):
+        # Create a HuggingFace Dataset
+        dataset = Dataset.from_dict({"text": train_texts})
+        
+        def tokenize_function(examples):
+            return self.tokenizer(examples["text"], padding="max_length", truncation=True)
 
-        with open(file_path, 'r', encoding='utf-8') as f:
-            content = f.read()
-            if not content.strip():
-                raise ValueError(f"The training file {file_path} is empty.")
-
-        # Prepare dataset
-        train_dataset = LineByLineTextDataset(
-            tokenizer=self.tokenizer,
-            file_path=file_path,
-            block_size=128,
-        )
-
-        if len(train_dataset) == 0:
-            raise ValueError(f"The training dataset is empty. File content: {content[:100]}...")
+        tokenized_dataset = dataset.map(tokenize_function, batched=True)
 
         # Data collator
         data_collator = DataCollatorForLanguageModeling(
             tokenizer=self.tokenizer, mlm=False,
         )
+
+        # Calculate optimal training steps
+        total_samples = len(tokenized_dataset)
+        steps_per_epoch = max(1, total_samples // batch_size)
+        total_steps = steps_per_epoch * num_epochs
+
+        # Optimize for RTX 3060 (12GB VRAM)
+        gradient_accumulation_steps = 4  # Adjust this based on your specific needs
+        fp16 = True  # Use mixed precision training
+
+        # Ensure logging_steps is non-zero
+        logging_steps = max(1, steps_per_epoch // 10)
 
         # Training arguments
         training_args = TrainingArguments(
@@ -68,9 +72,13 @@ class LLM:
             overwrite_output_dir=True,
             num_train_epochs=num_epochs,
             per_device_train_batch_size=batch_size,
+            gradient_accumulation_steps=gradient_accumulation_steps,
             learning_rate=learning_rate,
-            save_steps=10_000,
+            fp16=fp16,
+            save_steps=steps_per_epoch,
             save_total_limit=2,
+            logging_steps=logging_steps,
+            max_steps=total_steps,
         )
 
         # Initialize Trainer
@@ -78,7 +86,7 @@ class LLM:
             model=self.model,
             args=training_args,
             data_collator=data_collator,
-            train_dataset=train_dataset,
+            train_dataset=tokenized_dataset,
         )
 
         # Train the model
@@ -89,18 +97,12 @@ class LLM:
         self.tokenizer.save_pretrained("./results")
 
     def save(self, path: str):
-        os.makedirs(path, exist_ok=True)
         self.model.save_pretrained(path)
         self.tokenizer.save_pretrained(path)
-        with open(os.path.join(path, 'model_name.json'), 'w') as f:
-            json.dump({'model_name': self.model_name}, f)
 
     @classmethod
     def load_model(cls, path: str) -> 'LLM':
-        with open(os.path.join(path, 'model_name.json'), 'r') as f:
-            model_name = json.load(f)['model_name']
-        
-        instance = cls(model_name)
+        instance = cls()
         instance.model = AutoModelForCausalLM.from_pretrained(path)
         instance.tokenizer = AutoTokenizer.from_pretrained(path)
         

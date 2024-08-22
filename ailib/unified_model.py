@@ -1,7 +1,5 @@
 # D:\AiProject\ailib\unified_model.py
 
-import os
-import tempfile
 from typing import Union, List, Dict, Any
 import numpy as np
 from sklearn.base import BaseEstimator
@@ -31,19 +29,7 @@ class UnifiedModel:
 
     def train_llm(self, train_texts: List[str], train_labels: List[str] = None, **kwargs):
         if isinstance(self.model, LLM):
-            # Create a temporary file for training data
-            with tempfile.NamedTemporaryFile(mode='w+', delete=False, encoding='utf-8', suffix='.txt') as temp_file:
-                for text in train_texts:
-                    temp_file.write(text + "\n")
-                temp_file_path = temp_file.name
-
-            try:
-                # Pass the temporary file path to fine_tune
-                self.model.fine_tune(temp_file_path, train_labels, **kwargs)
-            finally:
-                # Remove the temporary file
-                if os.path.exists(temp_file_path):
-                    os.remove(temp_file_path)
+            self.model.fine_tune(train_texts, train_labels, **kwargs)
         else:
             raise ValueError("This method is only for LLM models")
 
