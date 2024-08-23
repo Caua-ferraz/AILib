@@ -1,3 +1,6 @@
+#BROKEN CODE AND ERRORS DETECTED, WORKING ON FIXES, PLEASE BE PATIENT...
+##FIX PREVISION : 2AM 8/24
+
 # AILib
 
 AILib is a versatile Python library that unifies traditional machine learning and large language models under a single, easy-to-use interface.
