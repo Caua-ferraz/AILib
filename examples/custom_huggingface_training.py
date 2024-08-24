@@ -1,8 +1,8 @@
-# D:\AiProject\examples\custom_huggingface_training.py
+# D:\AiProject\AILib-library\examples\custom_huggingface_training.py
 
 import torch
 from datasets import load_dataset
-from transformers import AutoTokenizer, TrainingArguments
+from transformers import AutoTokenizer
 from ailib import UnifiedModel
 
 def main():
@@ -10,49 +10,48 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
 
-    # Load a custom dataset (replace with your own dataset)
-    dataset = load_dataset("imdb")
-    train_dataset = dataset["train"]
+    # Load a custom dataset
+    try:
+        dataset = load_dataset("fineweb")
+        train_dataset = dataset["train"]
+    except Exception as e:
+        print(f"Error loading IMDB dataset: {e}")
+        print("Falling back to a smaller dataset for testing purposes.")
+        dataset = load_dataset("rotten_tomatoes")
+        train_dataset = dataset["train"]
 
     # Initialize tokenizer and model
-    model_name = "distilbert-base-uncased"
+    model_name = "gpt2"
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    
-    # Tokenize the dataset
-    def tokenize_function(examples):
-        return tokenizer(examples["text"], padding="max_length", truncation=True, max_length=512)
-
-    tokenized_datasets = train_dataset.map(tokenize_function, batched=True)
+    tokenizer.pad_token = tokenizer.eos_token
 
     # Initialize the UnifiedModel
     model = UnifiedModel('llm', model_name=model_name)
 
-    # Set up training arguments
-    # Adjust these values based on your RTX 3060's memory and performance
-    training_args = TrainingArguments(
-        output_dir="./results",
-        num_train_epochs=60,
-        per_device_train_batch_size=8,  # Adjust based on GPU memory
-        per_device_eval_batch_size=8,
-        warmup_steps=500,
-        weight_decay=0.01,
-        logging_dir="./logs",
-        logging_steps=100,
-        save_steps=1000,
-        eval_steps=1000,
-        evaluation_strategy="steps",
-        load_best_model_at_end=True,
-        save_total_limit=3,  # Keep only the last 3 checkpoints
-        fp16=True,  # Enable mixed precision training for RTX 3060
-        gradient_accumulation_steps=4,  # Increase effective batch size
-    )
+    # Set up custom training arguments
+    custom_training_args = {
+        "output_dir": "./results",
+        "num_train_epochs": 3,
+        "per_device_train_batch_size": 4,
+        "per_device_eval_batch_size": 4,
+        "warmup_steps": 500,
+        "weight_decay": 0.01,
+        "logging_dir": "./logs",
+        "logging_steps": 100,
+        "save_steps": 1000,
+        "eval_steps": 1000,
+        "evaluation_strategy": "steps",
+        "fp16": True,
+        "gradient_accumulation_steps": 8,
+    }
 
     # Fine-tune the model
     model.train_llm(
-        train_texts=tokenized_datasets["text"],
-        train_labels=tokenized_datasets["label"],
-        training_args=training_args,
-        tokenizer=tokenizer,
+        train_texts=train_dataset["text"],
+        num_epochs=3,
+        batch_size=4,
+        learning_rate=2e-5,
+        custom_training_args=custom_training_args
     )
 
     # Save the fine-tuned model
@@ -60,8 +59,11 @@ def main():
 
     # Test the model
     test_text = "This movie was fantastic! I really enjoyed every moment of it."
-    generated_text = model.predict(test_text)
-    print(f"Generated text: {generated_text}")
+    try:
+        generated_text = model.predict(test_text)
+        print(f"Generated text: {generated_text}")
+    except Exception as e:
+        print(f"Error generating text: {e}")
 
 if __name__ == "__main__":
     main()

@@ -55,6 +55,19 @@ class UnifiedModel:
 
     @classmethod
     def load(cls, model_type: str, path: str) -> 'UnifiedModel':
+        """
+        Load a model from a file.
+        
+        Args:
+            model_type (str): Type of the model to load ('neural_network', 'decision_tree', 'custom', or 'llm').
+            path (str): Path to the saved model.
+        
+        Returns:
+            UnifiedModel: Loaded model instance.
+        
+        Raises:
+            ValueError: If the model type is not supported.
+        """
         if model_type in ['neural_network', 'decision_tree', 'custom']:
             loaded_model = AIModel.load(path)
             return cls(model_type='custom', custom_model=loaded_model.model)
@@ -65,12 +78,36 @@ class UnifiedModel:
             raise ValueError(f"Unsupported model type for loading: {model_type}")
 
     def tokenize(self, text: str) -> List[str]:
+        """
+        Tokenize the input text.
+        
+        Args:
+            text (str): Input text to tokenize.
+        
+        Returns:
+            List[str]: List of tokens.
+        
+        Raises:
+            ValueError: If tokenization is not available for the current model type.
+        """
         if isinstance(self.model, LLM):
             return self.model.tokenize(text)
         else:
             raise ValueError("Tokenization is only available for LLM models")
 
     def get_token_ids(self, text: str) -> List[int]:
+        """
+        Get token IDs for the input text.
+        
+        Args:
+            text (str): Input text to convert to token IDs.
+        
+        Returns:
+            List[int]: List of token IDs.
+        
+        Raises:
+            ValueError: If getting token IDs is not available for the current model type.
+        """
         if isinstance(self.model, LLM):
             return self.model.get_token_ids(text)
         else:
