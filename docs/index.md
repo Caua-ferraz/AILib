@@ -1,52 +1,41 @@
 # AILib Documentation
 
-Welcome to the AILib documentation! AILib is a versatile Python library that unifies traditional machine learning and large language models under a single, easy-to-use interface.
+Welcome to AILib, a versatile Python library that unifies traditional machine learning and large language models under a single, easy-to-use interface.
 
-## Features
+## Key Features
 
 - Unified interface for both traditional ML models and LLMs
-- Support for neural networks and decision trees
+- Support for neural networks, decision trees, and custom models
 - Integration with popular LLMs like GPT-2
-- Customizable text generation parameters
-- Data preprocessing and evaluation utilities
-
-## Table of Contents
-
-1. [Getting Started](getting_started.md)
-2. [API Reference](api_reference.md)
-3. [Examples](examples.md)
-
-## Installation
-
-To install AILib, run the following command:
-
-```
-pip install ailib
-```
-
-For the latest development version, you can install directly from the repository:
-
-```
-pip install git+https://github.com/yourusername/ailib.git
-```
+- Advanced LLM training with custom datasets
+- Optimized training for specific GPU models
+- Data preprocessing and model evaluation utilities
 
 ## Quick Start
-
-Here's a quick example of how to use AILib:
 
 ```python
 from ailib import UnifiedModel, preprocess_data, split_data
 
-# For traditional ML
-ml_model = UnifiedModel('neural_network', hidden_layer_sizes=(10, 5))
-ml_model.train(X_train, y_train)
-predictions = ml_model.predict(X_test)
+# Traditional ML
+model = UnifiedModel('neural_network', hidden_layer_sizes=(10, 5))
+model.train(X_train, y_train)
+predictions = model.predict(X_test)
 
-# For LLM
+# Language Model
 llm_model = UnifiedModel('llm', model_name='gpt2')
 generated_text = llm_model.predict("Artificial Intelligence is")
-
-print(generated_text)
 ```
 
-For more detailed information, check out our [Getting Started](getting_started.md) guide.
+## Documentation Contents
+
+- [Installation](installation.md)
+- [Getting Started](getting_started.md)
+- [Tutorials](tutorials/basic_usage.md)
+- [API Reference](api_reference/unified_model.md)
+- [Advanced Topics](advanced_topics/fine_tuning_llms.md)
+- [Contributing](contributing.md)
+- [Changelog](changelog.md)
+
+## License
+
+AILib is released under the MIT License. See the [LICENSE](https://github.com/Caua-ferraz/ailib/blob/main/LICENSE) file for more details.
