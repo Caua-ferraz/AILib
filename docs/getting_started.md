@@ -1,6 +1,6 @@
 # Getting Started with AILib
 
-This guide will help you get up and running with AILib, covering basic usage for both traditional machine learning models and large language models.
+This guide will help you get up and running with **AILib**, covering basic usage for both traditional machine learning models and large language models. Additionally, it introduces configuration management, logging, and error handling features to enhance your workflow.
 
 ## Importing AILib
 
@@ -76,6 +76,33 @@ train_texts = [
 
 llm_model.train_llm(train_texts, num_epochs=3, batch_size=4)
 ```
+
+### Using the Fine-tuned Model
+
+```python
+fine_tuned_text = llm_model.predict("In the next decade, AI will")
+print("Fine-tuned Model Output:", fine_tuned_text)
+```
+
+## Saving and Loading Models
+
+```python
+# Save the models
+model.save("saved_traditional_ml_model.pkl")
+llm_model.save("saved_fine_tuned_llm_model")
+
+# Load the models
+loaded_ml_model = UnifiedModel.load('neural_network', "saved_traditional_ml_model.pkl")
+loaded_llm_model = UnifiedModel.load('llm', "saved_fine_tuned_llm_model")
+```
+
+## Configuration Management
+
+AILib uses structured configurations to manage settings efficiently. Learn how to load and save configurations [here](configuration.md).
+
+## Logging and Error Handling
+
+AILib integrates a robust logging system and custom error handling to streamline debugging and monitoring. Detailed information can be found in the [Logging](logging.md) and [Error Handling](error_handling.md) sections.
 
 ## Next Steps
 
