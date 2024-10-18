@@ -14,15 +14,18 @@ else:
 # Remove scikit-learn from the requirements list
 required = [req for req in required if not req.startswith('scikit-learn')]
 
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
+
 setup(
-    name="ailib",
+    name="PyAilib",
     version="0.3.0",
     packages=find_packages(),
     install_requires=required,
     author="The Small Guy",
     author_email="cauaferrazp@example.com",
     description="A comprehensive AI library including traditional ML models and LLMs",
-    long_description=open("README.md").read(),
+    long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/Caua-ferraz/AILib/",
     classifiers=[

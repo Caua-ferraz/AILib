@@ -2,13 +2,20 @@ LICENSE
 README.md
 setup.py
 ailib/__init__.py
+ailib/automated_model_selection.py
 ailib/config.py
 ailib/core.py
+ailib/data_augmentation.py
 ailib/data_processing.py
 ailib/error_handling.py
 ailib/evaluation.py
+ailib/explainability.py
+ailib/hyperparameter_optimization.py
 ailib/llm.py
+ailib/logging_setup.py
+ailib/model_serving.py
 ailib/model_training.py
+ailib/pipeline.py
 ailib/unified_model.py
 ailib/utils.py
 ailib.egg-info/PKG-INFO
@@ -25,4 +32,5 @@ tests/test_integration.py
 tests/test_llm.py
 tests/test_llm_training.py
 tests/test_model_training.py
+tests/test_train_gpt2.py
 tests/test_unified_model.py
